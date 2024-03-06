@@ -1,0 +1,30 @@
+query ArtistSearch(
+  $searchPhrase: String,
+  $genres: [String!],
+  $relevance: Ranking
+) {
+  Artist(
+    where: {
+      _fulltext: {
+        match: $searchPhrase
+      }
+    }
+    orderBy:{
+      _ranking: $relevance
+      Artist_Name: DESC
+    }
+  ) {
+    items {
+      Artist_Name
+      Teaser_Text
+      Genre
+      Biggest_Hits
+    }
+    facets {
+      Genre(filters: $genres) {
+        name
+        count
+      }
+    }
+  }
+}
