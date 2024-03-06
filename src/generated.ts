@@ -4721,12 +4721,77 @@ export enum System_Locales {
   Neutral = 'NEUTRAL'
 }
 
+export type ArtistSearchQueryVariables = Exact<{
+  searchPhrase?: InputMaybe<Scalars['String']['input']>;
+  genres?: InputMaybe<Array<Scalars['String']['input']> | Scalars['String']['input']>;
+  relevance?: InputMaybe<Ranking>;
+}>;
+
+
+export type ArtistSearchQuery = { __typename?: 'Query', Artist?: { __typename?: 'ArtistOutput', items?: Array<{ __typename?: 'Artist', Artist_Name?: string | null, Teaser_Text?: string | null, Genre?: string | null, Biggest_Hits?: Array<string | null> | null } | null> | null, facets?: { __typename?: 'ArtistFacet', Genre?: Array<{ __typename?: 'StringFacet', name?: string | null, count?: number | null } | null> | null } | null } | null };
+
 export type TotalItemsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type TotalItemsQuery = { __typename?: 'Query', Data?: { __typename?: 'DataOutput', total?: number | null } | null };
 
 
+export const ArtistSearchDocument = gql`
+    query ArtistSearch($searchPhrase: String, $genres: [String!], $relevance: Ranking) {
+  Artist(
+    where: {_fulltext: {match: $searchPhrase}}
+    orderBy: {_ranking: $relevance, Artist_Name: DESC}
+  ) {
+    items {
+      Artist_Name
+      Teaser_Text
+      Genre
+      Biggest_Hits
+    }
+    facets {
+      Genre(filters: $genres) {
+        name
+        count
+      }
+    }
+  }
+}
+    `;
+
+/**
+ * __useArtistSearchQuery__
+ *
+ * To run a query within a React component, call `useArtistSearchQuery` and pass it any options that fit your needs.
+ * When your component renders, `useArtistSearchQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useArtistSearchQuery({
+ *   variables: {
+ *      searchPhrase: // value for 'searchPhrase'
+ *      genres: // value for 'genres'
+ *      relevance: // value for 'relevance'
+ *   },
+ * });
+ */
+export function useArtistSearchQuery(baseOptions?: Apollo.QueryHookOptions<ArtistSearchQuery, ArtistSearchQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<ArtistSearchQuery, ArtistSearchQueryVariables>(ArtistSearchDocument, options);
+      }
+export function useArtistSearchLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ArtistSearchQuery, ArtistSearchQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<ArtistSearchQuery, ArtistSearchQueryVariables>(ArtistSearchDocument, options);
+        }
+export function useArtistSearchSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<ArtistSearchQuery, ArtistSearchQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<ArtistSearchQuery, ArtistSearchQueryVariables>(ArtistSearchDocument, options);
+        }
+export type ArtistSearchQueryHookResult = ReturnType<typeof useArtistSearchQuery>;
+export type ArtistSearchLazyQueryHookResult = ReturnType<typeof useArtistSearchLazyQuery>;
+export type ArtistSearchSuspenseQueryHookResult = ReturnType<typeof useArtistSearchSuspenseQuery>;
+export type ArtistSearchQueryResult = Apollo.QueryResult<ArtistSearchQuery, ArtistSearchQueryVariables>;
 export const TotalItemsDocument = gql`
     query TotalItems {
   Data {
